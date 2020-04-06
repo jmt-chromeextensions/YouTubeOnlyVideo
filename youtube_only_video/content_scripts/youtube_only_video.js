@@ -1,4 +1,4 @@
-chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
+chrome.extension.onMessage.addListener(function (msg) {
 
     if (msg.action == 'void') {
 
@@ -13,7 +13,7 @@ chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
 
         // Related videos
         $('#secondary').remove();
-        
+
         // Remove info div: video title, channel, views
         $("#info.style-scope.ytd-watch-flexy").remove();
 
