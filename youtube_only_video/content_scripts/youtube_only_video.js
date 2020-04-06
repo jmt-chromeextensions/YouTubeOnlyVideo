@@ -7,14 +7,15 @@ chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
         $('#page-manager > ytd-watch-flexy').css('cssText', "background-color: black !important");
 
         // Remove elements from view
+
         // Upper banner
         $('#masthead').remove();
 
         // Related videos
         $('#secondary').remove();
-
-        // Video title, views
-        $('#info').remove();
+        
+        // Remove info div: video title, channel, views
+        $("#info.style-scope.ytd-watch-flexy").remove();
 
         // Description box
         $('#meta').remove();
@@ -49,8 +50,12 @@ chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
             }
         }
 
-		// Remove scrollbar
-		setTimeout(function(){ $('body').css('overflow', 'hidden') }, 100);
+		// Remove scrollbars
+		setTimeout(function(){ 
+            $('body').css('overflow', 'hidden');
+            $("#page-manager").css('overflow', 'hidden');
+        }, 100);
+
         
 
     }
