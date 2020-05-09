@@ -13,7 +13,7 @@
   },
   
   "browser_action": {
-    "default_title": "⚫ Youtube Only Video 🔴"
+    "default_title": "🔴 ▶ ⚫"
   },
   
   "background": {
@@ -24,9 +24,15 @@
       "matches": [
         "https://*.youtube.com/*"
       ],
+      "css": [
+        "jbox/jBox.all.min.css",
+        "spectrum/spectrum.css"
+      ],
       "js": [
         "jquery/jquery-3.4.1.min.js",
-        "content_scripts/youtube_only_video.js"
+        "content_scripts/youtube_only_video.js",
+        "jbox/jBox.all.min.js",
+        "spectrum/spectrum.js"
       ]
     }
   ],

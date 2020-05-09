@@ -2,6 +2,10 @@ chrome.extension.onMessage.addListener(function (msg) {
 
     if (msg.action == 'void') {
 
+        //
+        // Visual modifications
+        //
+
         // Black backgrounds
         $('body > ytd-app').css('cssText', "background-color: black !important");
         $('#page-manager > ytd-watch-flexy').css('cssText', "background-color: black !important");
@@ -56,7 +60,51 @@ chrome.extension.onMessage.addListener(function (msg) {
             $("#page-manager").css('overflow', 'hidden');
         }, 100);
 
-        
+        //
+        // Add color palette popup
+        //         
+
+        setTimeout(function () {
+
+            // Create jBox modal
+            new jBox('Modal', {
+              attach: '#modal-drag-anywhere',
+              width: 444,
+              title: 'jBox',
+              overlay: false,
+              createOnInit: true,
+              content: 'Drag me around by clicking anywhere',
+              draggable: true,
+              repositionOnOpen: false,
+              repositionOnContent: false
+            });
+      
+            // Show modal
+            $("#jBox1").show();
+            $("#jBox1").css({ opacity: 1 });
+    
+            // Remove sample content and add input
+            $("#jBox1 .jBox-title").remove();
+            $("#jBox1 .jBox-content").html([
+                `<div id='container' style="width: 404px; height: 280px;">`,
+                    `<input style="display:none" id="color-picker">`,
+                    `<pre style="display: none;" id="sp-options">` + `<\/pre>`,
+                `<\/div>`
+            ].join(""));
+    
+            // Generate spectrum
+            $('#color-picker').spectrum();
+            $('#color-picker').click();
+
+            setTimeout(() => {
+                // Remove position related CSS properties from the spectrum and add it to the modal
+                debugger;
+                $(".sp-container")[0].id='most_beatiful_color_palette';
+                $("#most_beatiful_color_palette").detach().appendTo('#jBox1');
+                $("#most_beatiful_color_palette").removeAttr("style");
+            }, 0);
+      
+        }, 0);
 
     }
 
