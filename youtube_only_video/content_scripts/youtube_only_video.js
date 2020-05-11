@@ -89,23 +89,99 @@ chrome.extension.onMessage.addListener(function (msg) {
                 `<div id='container' style="width: 404px; height: 280px;">`,
                     `<input style="display:none" id="color-picker">`,
                     `<pre style="display: none;" id="sp-options">` + `<\/pre>`,
+                    `<button type="button" id="btn_changeColorToPredominant" style="margin-top:250px">Click Me!` + `<\/button>`,
                 `<\/div>`
             ].join(""));
-    
+
+            $("#btn_changeColorToPredominant").click(changeColorToPredominantColorInVideo);
+
+            // Make modal appear when the mouse is on it and make it dissapear when it is somewhere else
+            $("#jBox1").mouseover(function(){
+                $(this).stop(true).fadeTo(100,1);
+            }).mouseout(function(){
+                $(this).stop(true).fadeTo(500,0);
+            });
+
             // Generate spectrum
             $('#color-picker').spectrum();
+            $(".sp-colorize-container.sp-add-on").hide();
             $('#color-picker').click();
 
             setTimeout(() => {
                 // Remove position related CSS properties from the spectrum and add it to the modal
-                debugger;
+                $(".sp-container")[0].id='most_beatiful_color_palette';
                 $(".sp-container")[0].id='most_beatiful_color_palette';
                 $("#most_beatiful_color_palette").detach().appendTo('#jBox1');
                 $("#most_beatiful_color_palette").removeAttr("style");
             }, 0);
-      
+
         }, 0);
 
     }
 
+});
+
+function changeColorToPredominantColorInVideo () {
+
+    setInterval(() => {
+
+        getVideoMainColor();
+        debugger;
+
+    }, 20);
+
+}
+
+// Take 'screenshot' of the video playing and get its main color
+function getVideoMainColor() {
+    var player = $(".video-stream")[0];
+
+    var canvas = document.createElement("canvas");
+    canvas.width = player.videoWidth;
+    canvas.height = player.videoHeight;
+    canvas.getContext('2d').drawImage(player, 0, 0, canvas.width, canvas.height);
+
+    var myImage = canvas.toDataURL("image/png");
+
+    const colorThief = new ColorThief();
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.src = myImage;
+
+    img.addEventListener('load', function () {
+        var color = colorThief.getColor(img);
+        var hexColor = rgbToHex(color[0], color[1], color[2]);
+        changeElementsBgColor('#' + hexColor);
+    });
+}
+
+// Convert RGB value to HEX
+const rgbToHex = (r, g, b) => [r, g, b].map(x => {
+    const hex = x.toString(16)
+    return hex.length === 1 ? '0' + hex : hex
+}).join('')
+
+
+function changeElementsBgColor (mainColor) {
+
+    // Page background
+    $('body > ytd-app').css('cssText', "background-color:" + mainColor + "!important");
+    $('#page-manager > ytd-watch-flexy').css('cssText', "background-color:" + mainColor + "!important");
+
+    // Spectrum and jBox background
+    $(".sp-container").css('background-color', mainColor);
+    $(".jBox-container").css('background-color', mainColor);
+
+    // Video's progress bar
+    $("#movie_player > div.ytp-chrome-bottom > div.ytp-progress-bar-container > div.ytp-progress-bar > div.ytp-chapters-container > div > div.ytp-play-progress.ytp-swatch-background-color").css("background-color", mainColor);
+    $("#movie_player > div.ytp-chrome-bottom > div.ytp-progress-bar-container > div.ytp-progress-bar > div.ytp-chapters-container > div > div.ytp-progress-list > div.ytp-play-progress.ytp-swatch-background-color").css("background-color", mainColor);
+    $("#movie_player > div.ytp-chrome-bottom > div.ytp-progress-bar-container > div.ytp-progress-bar > div.ytp-scrubber-container > div").css("background-color", mainColor);
+
+}
+
+$( document ).ready(function() {
+    $(window).click(function(e) {
+        // e.preventDefault();
+        // alert(e.target.id); // gives the element's ID 
+    });
 });

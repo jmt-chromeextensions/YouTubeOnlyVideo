@@ -875,10 +875,9 @@
             boundElement.val(displayColor);
 
             // !!!
-            debugger;
             if (displayColor) {
-                $('body > ytd-app').css('cssText', "background-color:" + displayColor + "!important");
-                $('#page-manager > ytd-watch-flexy').css('cssText', "background-color:" + displayColor + "!important");
+
+                changeElementsBgColor(displayColor);
 
                 // $('body').css("background-color", displayColor)
                 // $('#container').css("background-color", displayColor)
@@ -982,14 +981,15 @@
             alphaWidth = alphaSlider.width();
             alphaSlideHelperWidth = alphaSlideHelper.width();
 
-            if (!flat) {
-                container.css("position", "absolute");
-                if (opts.offset) {
-                    container.offset(opts.offset);
-                } else {
-                    container.offset(getOffset(container, offsetElement));
-                }
-            }
+            // !!!
+            // if (!flat) {
+            //     container.css("position", "absolute");
+            //     if (opts.offset) {
+            //         container.offset(opts.offset);
+            //     } else {
+            //         container.offset(getOffset(container, offsetElement));
+            //     }
+            // }
 
             updateHelperLocations();
 

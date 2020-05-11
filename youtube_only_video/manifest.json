@@ -25,14 +25,15 @@
         "https://*.youtube.com/*"
       ],
       "css": [
-        "jbox/jBox.all.min.css",
-        "spectrum/spectrum.css"
+        "tools/jbox/jBox.all.min.css",
+        "tools/spectrum/spectrum.css"
       ],
       "js": [
         "jquery/jquery-3.4.1.min.js",
         "content_scripts/youtube_only_video.js",
-        "jbox/jBox.all.min.js",
-        "spectrum/spectrum.js"
+        "tools/jbox/jBox.all.min.js",
+        "tools/spectrum/spectrum.js",
+        "tools/color-thief/color-thief.min.js"
       ]
     }
   ],
