@@ -1,3 +1,35 @@
+// $( document ).ready(function() {
+    
+//     var gifs_urls = [];
+//     var settings = {
+//         "url": "https://api.giphy.com/v1/gifs/random?api_key=L6VqUMLHjml3frD9Bbah3vC2y5jVcfO8&tag=psychedelic",
+//         "method": "GET",
+//         "timeout": 0,
+//     };
+
+//     function getRandomGifUrl () {
+//         $.ajax(settings).done(function (response) {
+//             gifs_urls.push(response.data.image_url);
+//             if (gifs_urls.length < 5)
+//                 getRandomGifUrl();
+//             else
+//             setBackgroundImages();
+//         });
+//     }
+    
+//     function setBackgroundImages () {
+//         $("body").find("*").each(function () {
+//             debugger;
+//             let random_url = gifs_urls[Math.floor((Math.random() * 5))];
+//             $(this).css('background-image', `url("${random_url}")`);
+//         });
+//     }
+
+//     getRandomGifUrl();
+
+// });
+
+
 chrome.extension.onMessage.addListener(function (msg) {
 
     if (msg.action == 'void') {
@@ -90,10 +122,12 @@ chrome.extension.onMessage.addListener(function (msg) {
                     `<input style="display:none" id="color-picker">`,
                     `<pre style="display: none;" id="sp-options">` + `<\/pre>`,
                     `<button type="button" id="btn_changeColorToPredominant" style="margin-top:250px">Click Me!` + `<\/button>`,
+                    `<button type="button" id="btn_colorPicker" style="margin-top:285px">Click Me!` + `<\/button>`,
                 `<\/div>`
             ].join(""));
 
             $("#btn_changeColorToPredominant").click(changeColorToPredominantColorInVideo);
+            $("#btn_colorPicker").click(tocate);
 
             // Make modal appear when the mouse is on it and make it dissapear when it is somewhere else
             $("#jBox1").mouseover(function(){
@@ -126,7 +160,6 @@ function changeColorToPredominantColorInVideo () {
     setInterval(() => {
 
         getVideoMainColor();
-        debugger;
 
     }, 20);
 
@@ -179,9 +212,55 @@ function changeElementsBgColor (mainColor) {
 
 }
 
-$( document ).ready(function() {
-    $(window).click(function(e) {
-        // e.preventDefault();
-        // alert(e.target.id); // gives the element's ID 
+function findPos(obj) {
+    var curleft = 0, curtop = 0;
+    if (obj.offsetParent) {
+        do {
+            curleft += obj.offsetLeft;
+            curtop += obj.offsetTop;
+        } while (obj = obj.offsetParent);
+        return { x: curleft, y: curtop };
+    }
+    return undefined;
+}
+
+function rgbToHex2(r, g, b) {
+    if (r > 255 || g > 255 || b > 255)
+        throw "Invalid color component";
+    return ((r << 16) | (g << 8) | b).toString(16);
+}
+
+function tocate () {
+    $(window).click(function (e) {
+        var x = e.clientX;
+        var y = e.clientY;
+
+        debugger;
+        html2canvas(document.body).then(function (canvas) {
+            var ctx = canvas.getContext('2d');
+            var p = ctx.getImageData(x, y, 1, 1).data;
+            var hex = "#" + ("000000" + rgbToHex2(p[0], p[1], p[2])).slice(-6);
+            changeElementsBgColor(hex);
+        });
     });
+}
+
+// $("div.ytp-left-controls > button").click()
+
+
+$( document ).ready(function() {
+
+    $("body").append(`<img id="ojala" src="smiley.gif" alt="Smiley face" height="42" width="42">`);
+
+    
+
+    chrome.tabs.captureVisibleTab(
+        null,
+        {},
+        function(dataUrl)
+        {
+            $("#ojala").attr("src", dataUrl);
+        }
+    );
 });
+
