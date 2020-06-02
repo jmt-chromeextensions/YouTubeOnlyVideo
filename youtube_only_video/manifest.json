@@ -30,6 +30,7 @@
       ],
       "js": [
         "jquery/jquery-3.4.1.min.js",
+        "jquery/jquery-ui.min.js",
         "content_scripts/youtube_only_video.js",
         "tools/jbox/jBox.all.min.js",
         "tools/spectrum/spectrum.js",

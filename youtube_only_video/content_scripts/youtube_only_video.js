@@ -1,34 +1,12 @@
-// $( document ).ready(function() {
-    
-//     var gifs_urls = [];
-//     var settings = {
-//         "url": "https://api.giphy.com/v1/gifs/random?api_key=L6VqUMLHjml3frD9Bbah3vC2y5jVcfO8&tag=psychedelic",
-//         "method": "GET",
-//         "timeout": 0,
-//     };
+const FLASH_MODE = 1
+const SOFT_MODE = 2
 
-//     function getRandomGifUrl () {
-//         $.ajax(settings).done(function (response) {
-//             gifs_urls.push(response.data.image_url);
-//             if (gifs_urls.length < 5)
-//                 getRandomGifUrl();
-//             else
-//             setBackgroundImages();
-//         });
-//     }
-    
-//     function setBackgroundImages () {
-//         $("body").find("*").each(function () {
-//             debugger;
-//             let random_url = gifs_urls[Math.floor((Math.random() * 5))];
-//             $(this).css('background-image', `url("${random_url}")`);
-//         });
-//     }
+const BGCOLOR_ANIMATION_MILLISECONDS = 70; // Not too fast, not too slow
 
-//     getRandomGifUrl();
-
-// });
-
+var it_changeColorToPredominantColorInVideo = false;
+var interval_changeColorToPredominantColorInVideo;
+var soft_animation = false;
+var active_mode;
 
 chrome.extension.onMessage.addListener(function (msg) {
 
@@ -39,8 +17,8 @@ chrome.extension.onMessage.addListener(function (msg) {
         //
 
         // Black backgrounds
-        $('body > ytd-app').css('cssText', "background-color: black !important");
-        $('#page-manager > ytd-watch-flexy').css('cssText', "background-color: black !important");
+        $('body > ytd-app').css('cssText', "background-color: black");
+        $('#page-manager > ytd-watch-flexy').css('cssText', "background-color: black");
 
         // Remove elements from view
 
@@ -58,39 +36,17 @@ chrome.extension.onMessage.addListener(function (msg) {
 
         // Comment list
         $('#comments').remove();
-		
-		// Remove elements from video
-		// Channel icon
-		$('.annotation .branding-img').remove();
-		
-		// Info
-		$('.ytp-button .ytp-cards-button-icon-default').remove();
-		$('.ytp-chrome-top-buttons .ytp-cards-teaser-text').remove();
+
+        // Remove elements from video
+        // Channel icon
+        $(".annotation.annotation-type-custom.iv-branding").hide()
+
+        // Info
+        $('.ytp-button .ytp-cards-button-icon-default').remove();
+        $('.ytp-chrome-top-buttons .ytp-cards-teaser-text').remove();
 
         // F11 - Fullscreen
-        // https://stackoverflow.com/questions/7495373/how-to-make-browser-full-screen-using-f11-key-event-through-javascript
-        var el = document.documentElement
-            , rfs = // for newer Webkit and Firefox
-                el.requestFullScreen
-                || el.webkitRequestFullScreen
-                || el.mozRequestFullScreen
-                || el.msRequestFullScreen
-            ;
-        if (typeof rfs != "undefined" && rfs) {
-            rfs.call(el);
-        } else if (typeof window.ActiveXObject != "undefined") {
-            // for Internet Explorer
-            var wscript = new ActiveXObject("WScript.Shell");
-            if (wscript != null) {
-                wscript.SendKeys("{F11}");
-            }
-        }
-
-		// Remove scrollbars
-		setTimeout(function(){ 
-            $('body').css('overflow', 'hidden');
-            $("#page-manager").css('overflow', 'hidden');
-        }, 100);
+        fullscreenSwitch();
 
         //
         // Add color palette popup
@@ -100,40 +56,43 @@ chrome.extension.onMessage.addListener(function (msg) {
 
             // Create jBox modal
             new jBox('Modal', {
-              attach: '#modal-drag-anywhere',
-              width: 444,
-              title: 'jBox',
-              overlay: false,
-              createOnInit: true,
-              content: 'Drag me around by clicking anywhere',
-              draggable: true,
-              repositionOnOpen: false,
-              repositionOnContent: false
+                attach: '#modal-drag-anywhere',
+                width: 444,
+                title: 'jBox',
+                overlay: false,
+                createOnInit: true,
+                content: 'Drag me around by clicking anywhere',
+                draggable: true,
+                repositionOnOpen: false,
+                repositionOnContent: false
             });
-      
+
             // Show modal
             $("#jBox1").show();
             $("#jBox1").css({ opacity: 1 });
-    
+
             // Remove sample content and add input
             $("#jBox1 .jBox-title").remove();
             $("#jBox1 .jBox-content").html([
                 `<div id='container' style="width: 404px; height: 280px;">`,
-                    `<input style="display:none" id="color-picker">`,
-                    `<pre style="display: none;" id="sp-options">` + `<\/pre>`,
-                    `<button type="button" id="btn_changeColorToPredominant" style="margin-top:250px">Click Me!` + `<\/button>`,
-                    `<button type="button" id="btn_colorPicker" style="margin-top:285px">Click Me!` + `<\/button>`,
+                `<input style="display:none" id="color-picker">`,
+                `<pre style="display: none;" id="sp-options">` + `<\/pre>`,
+                `<button type="button" id="btn_fullscreen" style="margin-top:250px">fullscreen` + `<\/button>`,
+                `<button type="button" id="btn_changeColorToPredominant" data-mode=1 data-state=0 style="margin-top:250px">flash` + `<\/button>`,
+                `<button type="button" id="btn_changeColorToPredominant_soft" data-mode=2 data-state=0 style="margin-top:250px">soft` + `<\/button>`,
                 `<\/div>`
             ].join(""));
 
-            $("#btn_changeColorToPredominant").click(changeColorToPredominantColorInVideo);
-            $("#btn_colorPicker").click(tocate);
+            // Assign buttons' functions
+            $("#btn_fullscreen").click(fullscreenSwitch);
+            $("#btn_changeColorToPredominant").click({clicked_btn: this}, changeMode);
+            $("#btn_changeColorToPredominant_soft").click({clicked_btn: this}, changeMode);
 
             // Make modal appear when the mouse is on it and make it dissapear when it is somewhere else
-            $("#jBox1").mouseover(function(){
-                $(this).stop(true).fadeTo(100,1);
-            }).mouseout(function(){
-                $(this).stop(true).fadeTo(500,0);
+            $("#jBox1").mouseover(function () {
+                $(this).stop(true).fadeTo(100, 1);
+            }).mouseout(function () {
+                $(this).stop(true).fadeTo(500, 0);
             });
 
             // Generate spectrum
@@ -143,8 +102,8 @@ chrome.extension.onMessage.addListener(function (msg) {
 
             setTimeout(() => {
                 // Remove position related CSS properties from the spectrum and add it to the modal
-                $(".sp-container")[0].id='most_beatiful_color_palette';
-                $(".sp-container")[0].id='most_beatiful_color_palette';
+                $(".sp-container")[0].id = 'most_beatiful_color_palette';
+                $(".sp-container")[0].id = 'most_beatiful_color_palette';
                 $("#most_beatiful_color_palette").detach().appendTo('#jBox1');
                 $("#most_beatiful_color_palette").removeAttr("style");
             }, 0);
@@ -155,13 +114,78 @@ chrome.extension.onMessage.addListener(function (msg) {
 
 });
 
-function changeColorToPredominantColorInVideo () {
+// https://stackoverflow.com/questions/36672561/how-to-exit-fullscreen-onclick-using-javascript
+// https://stackoverflow.com/questions/7495373/how-to-make-browser-full-screen-using-f11-key-event-through-javascript
+function fullscreenSwitch() {
 
-    setInterval(() => {
+    var isInFullScreen = (document.fullscreenElement && document.fullscreenElement !== null) ||
+        (document.webkitFullscreenElement && document.webkitFullscreenElement !== null) ||
+        (document.mozFullScreenElement && document.mozFullScreenElement !== null) ||
+        (document.msFullscreenElement && document.msFullscreenElement !== null);
 
-        getVideoMainColor();
+    if (!isInFullScreen) {
 
-    }, 20);
+        var el = document.documentElement
+            , rfs = // for newer Webkit and Firefox
+                el.requestFullScreen
+                || el.webkitRequestFullScreen
+                || el.mozRequestFullScreen
+                || el.msRequestFullScreen
+            ;
+
+        if (typeof rfs != "undefined" && rfs)
+            rfs.call(el);
+
+        // Remove scrollbars
+        setTimeout(function () {
+            $('body').css('overflow', 'hidden');
+            $("#page-manager").css('overflow', 'hidden');
+        }, 100);
+
+    } else {
+
+        var el = document
+            , rfs = // for newer Webkit and Firefox
+                el.exitFullscreen()
+                || el.webkitExitFullscreen
+                || el.mozCancelFullScreen
+                || el.msExitFullscreen
+            ;
+
+        if (typeof rfs != "undefined" && rfs)
+            rfs.call(el);
+
+    }
+
+}
+
+function changeMode (clicked_btn) {
+
+    debugger;
+
+    if (parseInt(clicked_btn.target.dataset.state) == 1) {
+        it_changeColorToPredominantColorInVideo = false;
+        $("#jBox1").find('*[data-mode]').attr('data-state', 0);
+    } else {
+        it_changeColorToPredominantColorInVideo = true;
+        $("#jBox1").find('*[data-mode]:not(' + `#${clicked_btn.target.id}`).attr('data-state', 0);
+        $(`#${clicked_btn.target.id}`).attr('data-state', 1);
+        active_mode = parseInt(clicked_btn.target.dataset.mode);
+    }
+    
+    changeColorToPredominantColorInVideo();
+}
+
+function changeColorToPredominantColorInVideo() {
+
+    if (it_changeColorToPredominantColorInVideo)
+
+        interval_changeColorToPredominantColorInVideo = setInterval(() => {
+            getVideoMainColor();
+        }, 20);
+
+    else
+        clearInterval(interval_changeColorToPredominantColorInVideo);
 
 }
 
@@ -195,11 +219,27 @@ const rgbToHex = (r, g, b) => [r, g, b].map(x => {
 }).join('')
 
 
-function changeElementsBgColor (mainColor) {
+function changeElementsBgColor(mainColor) {
 
     // Page background
-    $('body > ytd-app').css('cssText', "background-color:" + mainColor + "!important");
-    $('#page-manager > ytd-watch-flexy').css('cssText', "background-color:" + mainColor + "!important");
+
+    switch (active_mode) {
+
+        case FLASH_MODE: 
+        
+            // console.log('0')
+            $('body > ytd-app').css('cssText', "background-color:" + mainColor + "!important");
+            $('#page-manager > ytd-watch-flexy').css('cssText', "background-color:" + mainColor + "!important");
+            break;
+
+        case SOFT_MODE:
+
+            // console.log('1');
+            $('body > ytd-app').stop().animate({ backgroundColor: mainColor }, BGCOLOR_ANIMATION_MILLISECONDS);
+            $('#page-manager > ytd-watch-flexy').stop().animate({backgroundColor:mainColor}, BGCOLOR_ANIMATION_MILLISECONDS);
+            break;
+
+    }
 
     // Spectrum and jBox background
     $(".sp-container").css('background-color', mainColor);
@@ -211,56 +251,3 @@ function changeElementsBgColor (mainColor) {
     $("#movie_player > div.ytp-chrome-bottom > div.ytp-progress-bar-container > div.ytp-progress-bar > div.ytp-scrubber-container > div").css("background-color", mainColor);
 
 }
-
-function findPos(obj) {
-    var curleft = 0, curtop = 0;
-    if (obj.offsetParent) {
-        do {
-            curleft += obj.offsetLeft;
-            curtop += obj.offsetTop;
-        } while (obj = obj.offsetParent);
-        return { x: curleft, y: curtop };
-    }
-    return undefined;
-}
-
-function rgbToHex2(r, g, b) {
-    if (r > 255 || g > 255 || b > 255)
-        throw "Invalid color component";
-    return ((r << 16) | (g << 8) | b).toString(16);
-}
-
-function tocate () {
-    $(window).click(function (e) {
-        var x = e.clientX;
-        var y = e.clientY;
-
-        debugger;
-        html2canvas(document.body).then(function (canvas) {
-            var ctx = canvas.getContext('2d');
-            var p = ctx.getImageData(x, y, 1, 1).data;
-            var hex = "#" + ("000000" + rgbToHex2(p[0], p[1], p[2])).slice(-6);
-            changeElementsBgColor(hex);
-        });
-    });
-}
-
-// $("div.ytp-left-controls > button").click()
-
-
-$( document ).ready(function() {
-
-    $("body").append(`<img id="ojala" src="smiley.gif" alt="Smiley face" height="42" width="42">`);
-
-    
-
-    chrome.tabs.captureVisibleTab(
-        null,
-        {},
-        function(dataUrl)
-        {
-            $("#ojala").attr("src", dataUrl);
-        }
-    );
-});
-
