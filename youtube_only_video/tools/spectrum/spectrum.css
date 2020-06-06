@@ -288,15 +288,17 @@ Here are the basic themeable display options (colors, fonts, global widths)
 */
 
 .sp-container {
+    background-color: transparent;
     display: inline-flex;
     border-radius: 0;
     background-color: white;
     padding: 0;
     border-radius: 4px;
     color: black;
-    box-shadow: 0 0 0 1px rgba(99,114,130,.16), 0 8px 16px rgba(27,39,51,.08);
 }
 .sp-container, .sp-container button, .sp-container input, .sp-color, .sp-hue, .sp-clear {
+    margin-left: 10px;
+    margin-top: 10px;
     font-size:12px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -361,9 +363,6 @@ Here are the basic themeable display options (colors, fonts, global widths)
 }
 
 /* Palettes */
-.sp-palette-container {
-    border-right: solid 1px #ccc;
-}
 
 .sp-palette-only .sp-palette-container {
     border: 0;
