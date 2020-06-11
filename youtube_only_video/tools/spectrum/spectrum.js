@@ -1,7 +1,11 @@
-// Spectrum Colorpicker v1.8.0
-// https://github.com/seballot/spectrum
-// Author: Brian Grinstead
-// License: MIT
+/***
+Spectrum Colorpicker v1.8.0
+https://github.com/seballot/spectrum
+Author: Brian Grinstead
+License: MIT
+***/
+
+/* jmt: The original JS file has been modified with a few small changes. */
 
 (function (factory) {
     "use strict";

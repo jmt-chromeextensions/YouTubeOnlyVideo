@@ -1,33 +1,13 @@
-const WIND_SVG = 
-`<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-width="55pt" height="28pt" viewBox="0 0 218.000000 143.000000"
-preserveAspectRatio="xMidYMid meet">
-
-<g id="g_wind" transform="translate(0.000000,143.000000) scale(0.100000,-0.100000)"
-fill="#red" stroke="none">
-<path d="M1600 1318 c-89 -31 -182 -96 -330 -229 -69 -61 -155 -135 -191 -164
--256 -206 -516 -308 -884 -348 -99 -11 -110 -14 -110 -32 0 -18 6 -20 75 -18
-176 6 411 59 579 132 174 75 325 179 556 386 219 196 310 245 451 245 42 0
-103 -7 136 -16 62 -16 86 -10 75 18 -8 23 -77 40 -187 44 -91 4 -114 2 -170
--18z"/>
-<path d="M1690 1088 c-89 -31 -182 -96 -330 -229 -69 -61 -155 -135 -191 -164
--256 -206 -516 -308 -884 -348 -99 -11 -110 -14 -110 -32 0 -18 6 -20 75 -18
-176 6 411 59 579 132 174 75 325 179 556 386 219 196 310 245 451 245 42 0
-103 -7 136 -16 62 -16 86 -10 75 18 -8 23 -77 40 -187 44 -91 4 -114 2 -170
--18z"/>
-<path d="M1760 868 c-89 -31 -182 -96 -330 -229 -69 -61 -155 -135 -191 -164
--256 -206 -516 -308 -884 -348 -99 -11 -110 -14 -110 -32 0 -18 6 -20 75 -18
-176 6 411 59 579 132 174 75 325 179 556 386 219 196 310 245 451 245 42 0
-103 -7 136 -16 62 -16 86 -10 75 18 -8 23 -77 40 -187 44 -91 4 -114 2 -170
--18z"/>
-</g>
-</svg>`
-
 const FLASH_MODE = 1
 const SOFT_MODE = 2
 
 const BGCOLOR_ANIMATION_MILLISECONDS = 70; // Not too fast, not too slow
 
+// Convert RGB value to HEX
+const rgbToHex = (r, g, b) => [r, g, b].map(x => {
+    const hex = x.toString(16)
+    return hex.length === 1 ? '0' + hex : hex
+}).join('')
 
 var it_changeColorToPredominantColorInVideo = false;
 var interval_changeColorToPredominantColorInVideo;
@@ -94,12 +74,13 @@ chrome.extension.onMessage.addListener(function (msg) {
                 repositionOnContent: false
             });
 
+            // Excuse me, let me change that height, that top, that left, etc.
+            $("#jBox1").height("400px");
+            $("#jBox1").offset({top: 450, left:1250 })
+
             // Show modal
             $("#jBox1").show();
             $("#jBox1").css({ opacity: 1 });
-
-            // Excuse me, let me change that height
-            $("#jBox1").height("400px");
 
             // Remove sample content and add input
             $("#jBox1 .jBox-title").remove();
@@ -107,9 +88,9 @@ chrome.extension.onMessage.addListener(function (msg) {
                 `<div id='container' style="width: 404px; height: 280px;">`,
                 `<input style="display:none" id="color-picker">`,
                 `<pre style="display: none;" id="sp-options">` + `<\/pre>`,
-                `<button type="button" class="btn_view_opts" id="btn_fullscreen">` + WIND_SVG + `<\/button>`,
-                `<button type="button" class="btn_view_opts" id="btn_changeColorToPredominant" data-mode=1 data-state=0>` + WIND_SVG + `<\/button>`,
-                `<button type="button" class="btn_view_opts" id="btn_changeColorToPredominant_soft" data-mode=2 data-state=0>` + WIND_SVG + `<\/button>`,
+                `<button id="btn_fullscreen" type="button" class="btn_view_opts btn_border_animation first_btn" ><span>` + FULLS_SVG + `<\/span><\/button>`,
+                `<button id="btn_changeColorToPredominant" type="button" class="btn_view_opts btn_border_animation" data-mode=1 data-state=0><span>` + BOLT_SVG + `<\/span><\/button>`,
+                `<button id="btn_changeColorToPredominant_soft" type="button" class="btn_view_opts btn_border_animation" data-mode=2 data-state=0><span>` + FAT_WIND_SVG + `<\/span><\/button>`,
                 `<\/div>`
             ].join(""));
 
@@ -118,12 +99,12 @@ chrome.extension.onMessage.addListener(function (msg) {
             $("#btn_changeColorToPredominant").click({clicked_btn: this}, changeMode);
             $("#btn_changeColorToPredominant_soft").click({clicked_btn: this}, changeMode);
 
-            // // Make modal appear when the mouse is on it and make it dissapear when it is somewhere else
-            // $("#jBox1").mouseover(function () {
-            //     $(this).stop(true).fadeTo(100, 1);
-            // }).mouseout(function () {
-            //     $(this).stop(true).fadeTo(500, 0);
-            // });
+            // Make modal appear when the mouse is on it and make it dissapear when it is somewhere else
+            $("#jBox1").mouseover(function () {
+                $(this).stop(true).fadeTo(100, 1);
+            }).mouseout(function () {
+                $(this).stop(true).fadeTo(500, 0);
+            });
 
             // Generate spectrum
             $('#color-picker').spectrum();
@@ -196,31 +177,28 @@ function fullscreenSwitch() {
 
 function changeMode (clicked_btn) {
 
-    debugger;
+    $('#jBox1 .jBox-content').find("path").css('cssText', `fill: white; stroke:white`);
 
-    if (parseInt(clicked_btn.target.dataset.state) == 1) {
+    if (parseInt(clicked_btn.currentTarget.dataset.state) == 1) {
+        clearInterval(interval_changeColorToPredominantColorInVideo);
         it_changeColorToPredominantColorInVideo = false;
         $("#jBox1").find('*[data-mode]').attr('data-state', 0);
     } else {
         it_changeColorToPredominantColorInVideo = true;
-        $("#jBox1").find('*[data-mode]:not(' + `#${clicked_btn.target.id}`).attr('data-state', 0);
-        $(`#${clicked_btn.target.id}`).attr('data-state', 1);
-        active_mode = parseInt(clicked_btn.target.dataset.mode);
+        $("#jBox1").find('*[data-mode]:not(' + `#${clicked_btn.currentTarget.id}`).attr('data-state', 0);
+        $("#jBox1").find('*[data-mode]:not(' + `#${clicked_btn.currentTarget.id}`).attr('data-state', 0);
+        $(`#${clicked_btn.currentTarget.id}`).attr('data-state', 1);
+        active_mode = parseInt(clicked_btn.currentTarget.dataset.mode);
     }
     
-    changeColorToPredominantColorInVideo();
-}
-
-function changeColorToPredominantColorInVideo() {
-
-    if (it_changeColorToPredominantColorInVideo)
-
+    if (it_changeColorToPredominantColorInVideo) {
+        clearInterval(interval_changeColorToPredominantColorInVideo);
         interval_changeColorToPredominantColorInVideo = setInterval(() => {
             getVideoMainColor();
         }, 20);
-
-    else
+    } else {
         clearInterval(interval_changeColorToPredominantColorInVideo);
+    }
 
 }
 
@@ -247,41 +225,41 @@ function getVideoMainColor() {
     });
 }
 
-// Convert RGB value to HEX
-const rgbToHex = (r, g, b) => [r, g, b].map(x => {
-    const hex = x.toString(16)
-    return hex.length === 1 ? '0' + hex : hex
-}).join('')
-
-
 function changeElementsBgColor(mainColor) {
 
-    // Page background
+    if (it_changeColorToPredominantColorInVideo)
+    {
 
-    switch (active_mode) {
+        // Page background and selected mode's button
+        switch (active_mode) {
 
-        case FLASH_MODE: 
-        
-            // console.log('0')
-            $('body > ytd-app').css('cssText', "background-color:" + mainColor + "!important");
-            $('#page-manager > ytd-watch-flexy').css('cssText', "background-color:" + mainColor + "!important");
-            break;
+            case FLASH_MODE: 
+            
+                $('body > ytd-app').css('cssText', "background-color:" + mainColor + "!important");
+                $('#page-manager > ytd-watch-flexy').css('cssText', "background-color:" + mainColor + "!important");
 
-        case SOFT_MODE:
+                // $('#btn_changeColorToPredominant').css('cssText', "border-color:" + mainColor);
+                $('#btn_changeColorToPredominant').find("path").css('cssText', `fill: ${mainColor}`);
+                
+                break;
+                
+            case SOFT_MODE:
+                    
+                $('body > ytd-app').stop().animate({ backgroundColor: mainColor }, BGCOLOR_ANIMATION_MILLISECONDS);
+                $('#page-manager > ytd-watch-flexy').stop().animate({backgroundColor:mainColor}, BGCOLOR_ANIMATION_MILLISECONDS);
 
-            // console.log('1');
-            $('body > ytd-app').stop().animate({ backgroundColor: mainColor }, BGCOLOR_ANIMATION_MILLISECONDS);
-            $('#page-manager > ytd-watch-flexy').stop().animate({backgroundColor:mainColor}, BGCOLOR_ANIMATION_MILLISECONDS);
-            break;
+                $('#btn_changeColorToPredominant_soft').find("path").eq(0).stop().css({'fill': mainColor, 'transition': 'fill 0.1s' });
+                $('#btn_changeColorToPredominant_soft').find("path").eq(1).stop().css({'fill': mainColor, 'transition': 'fill 0.2s' });
+                $('#btn_changeColorToPredominant_soft').find("path").eq(2).stop().css({'fill': mainColor, 'transition': 'fill 0.3s' });
 
+                break;
+    
+        }
+    } 
+    else { // Color selected directly from the palette
+        $('body > ytd-app').css('cssText', "background-color:" + mainColor + "!important");
+        $('#page-manager > ytd-watch-flexy').css('cssText', "background-color:" + mainColor + "!important");
     }
-
-    // Spectrum and jBox background
-    // $(".sp-container").css('background-color', mainColor);
-    // $(".jBox-container").css('background-color', mainColor);
-
-    // Selected mode's button
-    $('#g_wind').css({ fill: mainColor });
 
     // Video's progress bar
     $("#movie_player > div.ytp-chrome-bottom > div.ytp-progress-bar-container > div.ytp-progress-bar > div.ytp-chapters-container > div > div.ytp-play-progress.ytp-swatch-background-color").css("background-color", mainColor);
