@@ -22,7 +22,7 @@
   "content_scripts": [
     {
       "matches": [
-        "https://*.youtube.com/*"
+        "https://*.youtube.com/watch*"
       ],
       "css": [
         "tools/jbox/jBox.all.css",
@@ -31,14 +31,14 @@
       "js": [
         "jquery/jquery-3.4.1.min.js",
         "jquery/jquery-ui.min.js",
-
-        "icons/buttons_icons.js",
-        "content_scripts/youtube_only_video.js",
-
+        
         "tools/jbox/jBox.all.min.js",
         "tools/spectrum/spectrum.js",
         "tools/color-thief/color-thief.min.js",
-        "tools/html2canvas.min.js"
+
+        "icons/buttons_icons.js",
+        "content_scripts/youtube_only_video.js"
+
       ]
     }
   ],

@@ -8,6 +8,7 @@ License: MIT
 /* jmt: The original CSS file has been modified with a few small changes. */
 
 .sp-container {
+    opacity: 0;
     position:absolute;
     top:0;
     left:0;

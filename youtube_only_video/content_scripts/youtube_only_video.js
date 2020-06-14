@@ -9,13 +9,16 @@ const rgbToHex = (r, g, b) => [r, g, b].map(x => {
     return hex.length === 1 ? '0' + hex : hex
 }).join('')
 
+const colorThief = new ColorThief();
+var canvas;
+
 var it_changeColorToPredominantColorInVideo = false;
 var interval_changeColorToPredominantColorInVideo;
-var soft_animation = false;
 var active_mode;
 
 chrome.extension.onMessage.addListener(function (msg) {
 
+    // Extension's icon clicked, message sent from background script to initiate the process
     if (msg.action == 'void') {
 
         //
@@ -23,8 +26,8 @@ chrome.extension.onMessage.addListener(function (msg) {
         //
 
         // Black backgrounds
-        $('body > ytd-app').css('cssText', "background-color: black");
-        $('#page-manager > ytd-watch-flexy').css('cssText', "background-color: black");
+        $('body > ytd-app').css({ backgroundColor: 'black' });
+        $('#page-manager > ytd-watch-flexy').css({ backgroundColor: 'black' });
 
         // Remove elements from view
 
@@ -44,6 +47,7 @@ chrome.extension.onMessage.addListener(function (msg) {
         $('#comments').remove();
 
         // Remove elements from video
+
         // Channel icon
         $(".annotation.annotation-type-custom.iv-branding").hide()
 
@@ -77,11 +81,7 @@ chrome.extension.onMessage.addListener(function (msg) {
             // Excuse me, let me change that height, that top, that left, etc.
             $("#jBox1").height("400px");
             $("#jBox1").offset({top: 450, left:1250 })
-
-            // Show modal
-            $("#jBox1").show();
-            $("#jBox1").css({ opacity: 1 });
-
+            
             // Remove sample content and add input
             $("#jBox1 .jBox-title").remove();
             $("#jBox1 .jBox-content").html([
@@ -96,8 +96,7 @@ chrome.extension.onMessage.addListener(function (msg) {
 
             // Assign buttons' functions
             $("#btn_fullscreen").click(fullscreenSwitch);
-            $("#btn_changeColorToPredominant").click({clicked_btn: this}, changeMode);
-            $("#btn_changeColorToPredominant_soft").click({clicked_btn: this}, changeMode);
+            $("#btn_changeColorToPredominant, #btn_changeColorToPredominant_soft").click({clicked_btn: this}, changeMode);
 
             // Make modal appear when the mouse is on it and make it dissapear when it is somewhere else
             $("#jBox1").mouseover(function () {
@@ -110,21 +109,35 @@ chrome.extension.onMessage.addListener(function (msg) {
             $('#color-picker').spectrum();
             $(".sp-colorize-container.sp-add-on").hide();
             $('#color-picker').click();
-
+            
             setTimeout(() => {
                 // Remove position related CSS properties from the spectrum and add it to the modal
                 $(".sp-container")[0].id = 'most_beatiful_color_palette';
                 $(".sp-container")[0].id = 'most_beatiful_color_palette';
                 $("#most_beatiful_color_palette").detach().appendTo('#jBox1');
                 $("#most_beatiful_color_palette").removeAttr("style");
-
+                
                 // Transparent blackground color
-                $(".sp-container").css('background-color', 'transparent');
-                $(".jBox-container").css('background-color', 'transparent');
+                $(".sp-container").css({ backgroundColor: 'transparent' });
+                $(".jBox-container").css({ backgroundColor: 'transparent' });
 
+                 // Show modal
+                $("#jBox1").show();
+                $("#jBox1").css({ opacity: 1 });
+                $(".sp-container").css({ opacity: 1 });
+                
             }, 0);
-
+            
         }, 0);
+
+        //
+        // Generate canvas from video to use it for dynamic color change modes
+        // 
+
+        player = $(".video-stream")[0];
+        canvas = document.createElement("canvas");
+        canvas.width = player.videoWidth;
+        canvas.height = player.videoHeight;
 
     }
 
@@ -154,8 +167,8 @@ function fullscreenSwitch() {
 
         // Remove scrollbars
         setTimeout(function () {
-            $('body').css('overflow', 'hidden');
-            $("#page-manager").css('overflow', 'hidden');
+            $('body').css({ overflow: 'hidden' });
+            $("#page-manager").css({ overflow: 'hidden' });
         }, 100);
 
     } else {
@@ -175,20 +188,25 @@ function fullscreenSwitch() {
 
 }
 
+// Fancy jQuery to switch between two visualizing modes 🤣 (and maybe more in the future)
 function changeMode (clicked_btn) {
 
-    $('#jBox1 .jBox-content').find("path").css('cssText', `fill: white; stroke:white`);
+    $('#jBox1 .jBox-content').find("path").css({ fill: 'white', stroke: 'white' });
 
     if (parseInt(clicked_btn.currentTarget.dataset.state) == 1) {
+
         clearInterval(interval_changeColorToPredominantColorInVideo);
         it_changeColorToPredominantColorInVideo = false;
         $("#jBox1").find('*[data-mode]').attr('data-state', 0);
+
     } else {
+
         it_changeColorToPredominantColorInVideo = true;
         $("#jBox1").find('*[data-mode]:not(' + `#${clicked_btn.currentTarget.id}`).attr('data-state', 0);
         $("#jBox1").find('*[data-mode]:not(' + `#${clicked_btn.currentTarget.id}`).attr('data-state', 0);
         $(`#${clicked_btn.currentTarget.id}`).attr('data-state', 1);
         active_mode = parseInt(clicked_btn.currentTarget.dataset.mode);
+        
     }
     
     if (it_changeColorToPredominantColorInVideo) {
@@ -202,18 +220,12 @@ function changeMode (clicked_btn) {
 
 }
 
-// Take 'screenshot' of the video playing and get its main color
+// Take 'screenshot' of the video that is being played and get its main color
 function getVideoMainColor() {
-    var player = $(".video-stream")[0];
-
-    var canvas = document.createElement("canvas");
-    canvas.width = player.videoWidth;
-    canvas.height = player.videoHeight;
     canvas.getContext('2d').drawImage(player, 0, 0, canvas.width, canvas.height);
 
     var myImage = canvas.toDataURL("image/png");
 
-    const colorThief = new ColorThief();
     const img = new Image();
     img.crossOrigin = 'Anonymous';
     img.src = myImage;
@@ -235,10 +247,9 @@ function changeElementsBgColor(mainColor) {
 
             case FLASH_MODE: 
             
-                $('body > ytd-app').css('cssText', "background-color:" + mainColor + "!important");
-                $('#page-manager > ytd-watch-flexy').css('cssText', "background-color:" + mainColor + "!important");
+                $('body > ytd-app').css({ backgroundColor: mainColor });
+                $('#page-manager > ytd-watch-flexy').css({ backgroundColor: mainColor });
 
-                // $('#btn_changeColorToPredominant').css('cssText', "border-color:" + mainColor);
                 $('#btn_changeColorToPredominant').find("path").css('cssText', `fill: ${mainColor}`);
                 
                 break;
@@ -257,13 +268,13 @@ function changeElementsBgColor(mainColor) {
         }
     } 
     else { // Color selected directly from the palette
-        $('body > ytd-app').css('cssText', "background-color:" + mainColor + "!important");
-        $('#page-manager > ytd-watch-flexy').css('cssText', "background-color:" + mainColor + "!important");
+        $('body > ytd-app').css({ backgroundColor: mainColor });
+        $('#page-manager > ytd-watch-flexy').css({ backgroundColor: mainColor });
     }
 
     // Video's progress bar
-    $("#movie_player > div.ytp-chrome-bottom > div.ytp-progress-bar-container > div.ytp-progress-bar > div.ytp-chapters-container > div > div.ytp-play-progress.ytp-swatch-background-color").css("background-color", mainColor);
-    $("#movie_player > div.ytp-chrome-bottom > div.ytp-progress-bar-container > div.ytp-progress-bar > div.ytp-chapters-container > div > div.ytp-progress-list > div.ytp-play-progress.ytp-swatch-background-color").css("background-color", mainColor);
-    $("#movie_player > div.ytp-chrome-bottom > div.ytp-progress-bar-container > div.ytp-progress-bar > div.ytp-scrubber-container > div").css("background-color", mainColor);
+    $("#movie_player > div.ytp-chrome-bottom > div.ytp-progress-bar-container > div.ytp-progress-bar > div.ytp-chapters-container > div > div.ytp-play-progress.ytp-swatch-background-color").css({ backgroundColor: mainColor });
+    $("#movie_player > div.ytp-chrome-bottom > div.ytp-progress-bar-container > div.ytp-progress-bar > div.ytp-chapters-container > div > div.ytp-progress-list > div.ytp-play-progress.ytp-swatch-background-color").css({ backgroundColor: mainColor });
+    $("#movie_player > div.ytp-chrome-bottom > div.ytp-progress-bar-container > div.ytp-progress-bar > div.ytp-scrubber-container > div").css({ backgroundColor: mainColor });
 
 }
