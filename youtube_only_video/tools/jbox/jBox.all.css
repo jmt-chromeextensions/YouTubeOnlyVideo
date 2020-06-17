@@ -1103,6 +1103,10 @@ body[class^="jBox-blockScroll-"] {
     margin-left: 27px;
 }
 
+.unique_btn  {
+    margin-left: 150px;
+}
+
 /* Border animation */
 /* https://codepen.io/sarath-ar/pen/dMKxxM */
 

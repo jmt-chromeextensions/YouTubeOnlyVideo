@@ -479,7 +479,6 @@ Here are the basic themeable display options (colors, fonts, global widths)
     border-radius: 3px;
 }
 
-
 /* Buttons: http://hellohappy.org/css3-buttons/ */
 .sp-container button {
     border-radius: 3px;
@@ -508,7 +507,6 @@ Here are the basic themeable display options (colors, fonts, global widths)
     background-color: #f3f3f3;
     margin: 0;
 }
-
 
 .sp-palette span:hover, .sp-palette span.sp-thumb-active {
     border-color: #000;
