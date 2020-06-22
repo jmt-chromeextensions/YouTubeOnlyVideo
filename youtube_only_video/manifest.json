@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "YouTube Only Video",
   "short_name": "YouTubeOnlyVideo",
-  "version": "1.0.0.4",
+  "version": "2.0.0.0",
   
   "description": "Have a private moment with your favourite video.",
   "icons": {
@@ -13,7 +13,7 @@
   },
   
   "browser_action": {
-    "default_title": "⚫ Youtube Only Video 🔴"
+    "default_title": "🔴 ▶ ⚫"
   },
   
   "background": {
@@ -22,16 +22,30 @@
   "content_scripts": [
     {
       "matches": [
-        "https://*.youtube.com/*"
+        "https://*.youtube.com/watch*"
+      ],
+      "css": [
+        "tools/jbox/jBox.all.css",
+        "tools/spectrum/spectrum.css"
       ],
       "js": [
         "jquery/jquery-3.4.1.min.js",
+        "jquery/jquery-ui.min.js",
+        
+        "tools/jbox/jBox.all.min.js",
+        "tools/spectrum/spectrum.js",
+        "tools/color-thief/color-thief.min.js",
+
+        "icons/buttons_icons.js",
         "content_scripts/youtube_only_video.js"
+
       ]
     }
   ],
 
   "permissions": [
+    "storage",
     "tabs"
   ]
+
 }
