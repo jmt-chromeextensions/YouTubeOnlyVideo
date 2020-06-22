@@ -20,7 +20,7 @@ const FLASH_MODE = 1
 const SOFT_MODE = 2
 
 const INTERVAL_MILLISECONDS = 50;
-const BGCOLOR_ANIMATION_MILLISECONDS = 70; // Not too fast, not too slow
+const BGCOLOR_ANIMATION_MILLISECONDS = 100; // Not too fast, not too slow
 
 // Convert RGB value to HEX
 const rgbToHex = (r, g, b) => [r, g, b].map(x => {
@@ -92,7 +92,7 @@ chrome.extension.onMessage.addListener(function (msg) {
             fullscreenSwitch();
 
             //
-            // Add color palette popup
+            // Add color palette pop-up
             //         
 
             setTimeout(function () {
@@ -113,7 +113,7 @@ chrome.extension.onMessage.addListener(function (msg) {
 
                 // Excuse me, let me change that height, that top, that left, etc.
                 $("#jBox1").height("400px");
-                $("#jBox1").offset({ top: 450, left: 1250 })
+                $("#jBox1").offset({ top: 75, left: 1250 })
 
                 // Remove sample content and add input
                 $("#jBox1 .jBox-title").remove();
