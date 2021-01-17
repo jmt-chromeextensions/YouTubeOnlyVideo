@@ -65,19 +65,19 @@ chrome.extension.onMessage.addListener(function (msg) {
             // Remove elements from view
 
             // Upper banner
-            $('#masthead').remove();
+            $('#masthead').hide();
 
             // Related videos
-            $('#secondary').remove();
+            $('#secondary.style-scope').hide();
 
             // Remove info div: video title, channel, views
-            $("#info.style-scope.ytd-watch-flexy").remove();
+            $("#info.style-scope.ytd-watch-flexy").hide();
 
             // Description box
-            $('#meta').remove();
+            $('#meta.style-scope').hide();
 
             // Comment list
-            $('#comments').remove();
+            $('#comments').hide();
 
             // Remove elements from video
 
@@ -85,8 +85,8 @@ chrome.extension.onMessage.addListener(function (msg) {
             $(".annotation.annotation-type-custom.iv-branding").hide()
 
             // Info
-            $('.ytp-button .ytp-cards-button-icon-default').remove();
-            $('.ytp-chrome-top-buttons .ytp-cards-teaser-text').remove();
+            $('.ytp-button .ytp-cards-button-icon-default').hide();
+            $('.ytp-chrome-top-buttons .ytp-cards-teaser-text').hide();
 
             // F11 - Fullscreen
             fullscreenSwitch();

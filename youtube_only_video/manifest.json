@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "YouTube Only Video",
   "short_name": "YouTubeOnlyVideo",
-  "version": "2.0.0.0",
+  "version": "2.0.0.1",
   
   "description": "Have a private moment with your favourite video.",
   "icons": {
@@ -22,7 +22,7 @@
   "content_scripts": [
     {
       "matches": [
-        "https://*.youtube.com/watch*"
+        "https://*.youtube.com/*"
       ],
       "css": [
         "tools/jbox/jBox.all.css",
