@@ -13,6 +13,8 @@ const REMEMBER_MY_DECISION_MESSAGE =
 const HIDE_BUTTONS_MESSAGE =
     `Do you want the two mentioned buttons (represented by the bolt and the wavy dashes icons) to be removed and not appear again?`
 
+const BACKGROUND_ELEMENTS = "body > ytd-app, #page-manager > ytd-watch-flexy, .ytp-caption-window-container, .ytp-transparent"
+
 const DO_NOT_SHOW_WARNING_SETTING_KEY = 'notShowEpilepsyWarningAgain'
 const HIDE_BUTTONS_SETTING_KEY = 'notShowDynamicColorChangeButtons';
 
@@ -59,8 +61,7 @@ chrome.extension.onMessage.addListener(function (msg) {
             //
 
             // Black backgrounds
-            $('body > ytd-app').css({ backgroundColor: 'black' });
-            $('#page-manager > ytd-watch-flexy').css({ backgroundColor: 'black' });
+            $(BACKGROUND_ELEMENTS).css({ backgroundColor: 'black' });
 
             // Remove elements from view
 
@@ -328,8 +329,7 @@ function changeElementsBgColor(mainColor) {
 
             case FLASH_MODE:
 
-                $('body > ytd-app').css({ backgroundColor: mainColor });
-                $('#page-manager > ytd-watch-flexy').css({ backgroundColor: mainColor });
+                $(BACKGROUND_ELEMENTS).css({ backgroundColor: mainColor });
 
                 $('#btn_changeColorToPredominant').find("path").css('cssText', `fill: ${mainColor}`);
 
@@ -350,8 +350,7 @@ function changeElementsBgColor(mainColor) {
     }
 
     else { // Color selected directly from the palette
-        $('body > ytd-app').css({ backgroundColor: mainColor });
-        $('#page-manager > ytd-watch-flexy').css({ backgroundColor: mainColor });
+        $(BACKGROUND_ELEMENTS).css({ backgroundColor: mainColor });
     }
 
     // Video's progress bar
