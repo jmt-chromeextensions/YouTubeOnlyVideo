@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "YouTube Only Video",
   "short_name": "YouTubeOnlyVideo",
-  "version": "2.0.0.2",
+  "version": "2.0.0.3",
   
   "description": "Have a private moment with your favourite video.",
   "icons": {
@@ -17,7 +17,10 @@
   },
   
   "background": {
-    "scripts": [ "background_scripts/ext_button_clicked.js" ]
+    "scripts": [ 
+      "background_scripts/initialize_extension.js",
+      "background_scripts/ext_button_clicked.js" 
+    ]
   },
   "content_scripts": [
     {
