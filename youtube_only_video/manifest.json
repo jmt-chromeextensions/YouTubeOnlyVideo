@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "YouTube Only Video",
   "short_name": "YouTubeOnlyVideo",
-  "version": "2.0.0.3",
+  "version": "2.0.0.4",
   
   "description": "Have a private moment with your favourite video.",
   "icons": {
@@ -47,6 +47,7 @@
   ],
 
   "permissions": [
+    "*://*/*",
     "storage",
     "tabs"
   ]
