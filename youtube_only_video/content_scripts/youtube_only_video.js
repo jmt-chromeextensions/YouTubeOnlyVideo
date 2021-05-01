@@ -337,8 +337,7 @@ function changeElementsBgColor(mainColor) {
 
             case SOFT_MODE:
 
-                $('body > ytd-app').stop().animate({ backgroundColor: mainColor }, BGCOLOR_ANIMATION_MILLISECONDS);
-                $('#page-manager > ytd-watch-flexy').stop().animate({ backgroundColor: mainColor }, BGCOLOR_ANIMATION_MILLISECONDS);
+                $(BACKGROUND_ELEMENTS).stop().animate({ backgroundColor: mainColor }, BGCOLOR_ANIMATION_MILLISECONDS);
 
                 $('#btn_changeColorToPredominant_soft').find("path").eq(0).stop().css({ 'fill': mainColor, 'transition': 'fill 0.1s' });
                 $('#btn_changeColorToPredominant_soft').find("path").eq(1).stop().css({ 'fill': mainColor, 'transition': 'fill 0.2s' });
