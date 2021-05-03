@@ -11,6 +11,16 @@ function executeScripts(tabId, scripts)
 
 }
 
+function adaptFrom2_0_0_4To2_0_0_5() {
+    const DO_NOT_SHOW_WARNING_SETTING_KEY = 'notShowEpilepsyWarningAgain'
+    const HIDE_BUTTONS_SETTING_KEY = 'notShowDynamicColorChangeButtons';
+
+    chrome.storage.sync.get([DO_NOT_SHOW_WARNING_SETTING_KEY, HIDE_BUTTONS_SETTING_KEY], function (result) {
+        if (result[DO_NOT_SHOW_WARNING_SETTING_KEY])  
+            chrome.storage.sync.set({"new_key_test": "abc123" }, function () { });
+    });
+}
+
 chrome.runtime.onInstalled.addListener(function (details) {
     debugger;
     
@@ -27,6 +37,12 @@ chrome.runtime.onInstalled.addListener(function (details) {
                                              "icons/buttons_icons.js", "content_scripts/youtube_only_video.js"]);
             }
         });
+    } else if (details.reason === "update") {
+        let currentVersion = chrome.runtime.getManifest().version;
+        let previousVersion = details.previousVersion;
+
+        if (currentVersion === "2.0.0.5" && previousVersion === "2.0.0.4")
+            adaptFrom2_0_0_4To2_0_0_5();
     }
 
 });

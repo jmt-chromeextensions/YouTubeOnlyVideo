@@ -44,6 +44,14 @@ var it_changeColorToPredominantColorInVideo = false;
 var interval_changeColorToPredominantColorInVideo;
 var active_mode;
 
+$(document).ready(() => {
+    chrome.storage.sync.get(["new_key_test"], function (result) {
+        let new_key_test;
+        if (result["new_key_test"])
+            new_key_test = result["new_key_test"];
+    });
+});
+
 chrome.extension.onMessage.addListener(function (msg) {
 
     // Extension's icon clicked, message sent from background script to initiate the process
