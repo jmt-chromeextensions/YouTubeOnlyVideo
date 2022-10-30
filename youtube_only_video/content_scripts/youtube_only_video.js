@@ -13,6 +13,8 @@ const REMEMBER_MY_DECISION_MESSAGE =
 const HIDE_BUTTONS_MESSAGE =
     `Do you want the two mentioned buttons (represented by the bolt and the wavy dashes icons) to be removed and not appear again?`
 
+const HIDE_ELEMENTS = "#masthead, #secondary.style-scope, #info.style-scope.ytd-watch-flexy, #meta.style-scope, #comments"
+const HIDE_ELEMENTS2 = ".annotation.annotation-type-custom.iv-branding, .ytp-button .ytp-cards-button-icon-default, .ytp-chrome-top-buttons .ytp-cards-teaser-text, #below.style-scope, .ytp-gradient-bottom"
 const BACKGROUND_ELEMENTS = "body > ytd-app, #page-manager > ytd-watch-flexy, .ytp-caption-window-container, .ytp-transparent"
 
 const DO_NOT_SHOW_WARNING_SETTING_KEY = 'notShowEpilepsyWarningAgain'
@@ -70,32 +72,11 @@ chrome.extension.onMessage.addListener(function (msg) {
 
             // Black backgrounds
             $(BACKGROUND_ELEMENTS).css({ backgroundColor: 'black' });
-
+            
             // Remove elements from view
-
-            // Upper banner
-            $('#masthead').hide();
-
-            // Related videos
-            $('#secondary.style-scope').hide();
-
-            // Remove info div: video title, channel, views
-            $("#info.style-scope.ytd-watch-flexy").hide();
-
-            // Description box
-            $('#meta.style-scope').hide();
-
-            // Comment list
-            $('#comments').hide();
-
-            // Remove elements from video
-
-            // Channel icon
-            $(".annotation.annotation-type-custom.iv-branding").hide()
-
-            // Info
-            $('.ytp-button .ytp-cards-button-icon-default').hide();
-            $('.ytp-chrome-top-buttons .ytp-cards-teaser-text').hide();
+            $(HIDE_ELEMENTS).hide();
+            $(HIDE_ELEMENTS2).hide();
+            // setTimeout(() => { $(HIDE_ELEMENTS).hide(); }, 3000);
 
             // F11 - Fullscreen
             fullscreenSwitch();
