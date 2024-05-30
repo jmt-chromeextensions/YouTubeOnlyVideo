@@ -17,11 +17,9 @@
   },
   
   "background": {
-    "service_worker": [ 
-      "background_scripts/initialize_extension.js",
-      "background_scripts/ext_button_clicked.js" 
-    ]
+    "service_worker": "background_scripts/initialize_extension.js"
   },
+
   "content_scripts": [
     {
       "matches": [
@@ -46,10 +44,23 @@
     }
   ],
 
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "background_scripts/initialize_extension.js",
+        "background_scripts/ext_button_clicked.js"
+      ],
+      "matches": ["https://*.youtube.com/*"]
+    }
+  ],
+
   "permissions": [
-    "*://*/*",
+    "scripting",
     "storage",
     "tabs"
-  ]
+  ],
 
+  "host_permissions": [
+    "https://*.youtube.com/*"
+  ]
 }

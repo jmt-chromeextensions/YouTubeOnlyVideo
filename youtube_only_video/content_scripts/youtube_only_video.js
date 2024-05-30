@@ -54,7 +54,7 @@ $(document).ready(() => {
     });
 });
 
-chrome.extension.onMessage.addListener(function (msg) {
+chrome.runtime.onMessage.addListener(function (msg) {
 
     // Extension's icon clicked, message sent from background script to initiate the process
     if (msg.action == 'void') {
